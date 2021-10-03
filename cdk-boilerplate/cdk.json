@@ -13,6 +13,78 @@
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": true,
     "@aws-cdk/aws-efs:defaultEncryptionAtRest": true,
     "@aws-cdk/aws-lambda:recognizeVersionProps": true,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true,
+    "build_output_path": "../AWSLambdaFunction/bin/Release/netcoreapp3.1/AWSLambdaFunction.zip",
+    "environments": {
+      "test": {
+        "bucket_arn": "arn:aws:s3:::<test-bucket-name>",
+        "bucket_id": "<test-bucket-name>",
+        "lambda_func_id": "ObjectDescriptionLogger",
+        "lambda_func_name": "ObjectDescriptionLogger",
+        "lambda_proj_path": "./../AWSLambdaFunction",
+        "lambda_func_handler": "AWSLambdaFunction::AWSLambdaFunction.Function::FunctionHandler",
+        "lambda_func_timeout": 30,
+        "lambda_func_subnet": [
+          "subnet-test-1",
+          "subnet-test-2"
+        ],
+        "lambda_func_sec_group": [
+          "sg-test-1"
+        ],
+        "lambda_func_memory_size": 256,
+        "lambda_func_vpc": "vpc-test",
+        "lambda_func_availability_zones": [
+          "eu-central-1a",
+          "eu-central-1b"
+        ],
+        "role_name": "s3_lambda_event_role_test"
+      },
+      "staging": {
+        "bucket_arn": "arn:aws:s3:::<staging-bucket-name>",
+        "bucket_id": "<staging-bucket-name>",
+        "lambda_func_id": "ObjectDescriptionLogger",
+        "lambda_func_name": "ObjectDescriptionLogger",
+        "lambda_proj_path": "./../AWSLambdaFunction",
+        "lambda_func_handler": "AWSLambdaFunction::AWSLambdaFunction.Function::FunctionHandler",
+        "lambda_func_timeout": 30,
+        "lambda_func_subnet": [
+          "subnet-stage-1",
+          "subnet-stage-2"
+        ],
+        "lambda_func_sec_group": [
+          "sg-stage-1"
+        ],
+        "lambda_func_memory_size": 256,
+        "lambda_func_vpc": "vpc-stage",
+        "lambda_func_availability_zones": [
+          "eu-central-1a",
+          "eu-central-1b"
+        ],
+        "role_name": "s3_lambda_event_role_staging"
+      },
+      "production": {
+        "bucket_arn": "arn:aws:s3:::<production-bucket-name>",
+        "bucket_id": "<production-bucket-name>",
+        "lambda_func_id": "ObjectDescriptionLogger",
+        "lambda_func_name": "ObjectDescriptionLogger",
+        "lambda_proj_path": "./../AWSLambdaFunction",
+        "lambda_func_handler": "AWSLambdaFunction::AWSLambdaFunction.Function::FunctionHandler",
+        "lambda_func_timeout": 30,
+        "lambda_func_subnet": [
+          "subnet-prod-1",
+          "subnet-prod-2"
+        ],
+        "lambda_func_sec_group": [
+          "sg-prod-1"
+        ],
+        "lambda_func_memory_size": 256,
+        "lambda_func_vpc": "vpc-prod",
+        "lambda_func_availability_zones": [
+          "eu-central-1a",
+          "eu-central-1b"
+        ],
+        "role_name": "s3_lambda_event_role_production"
+      }
+    }
   }
 }
