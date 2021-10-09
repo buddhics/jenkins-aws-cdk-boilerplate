@@ -20,6 +20,5 @@ done
 
 $aws_identity_data = aws sts get-caller-identity
 $aws_account_id = $(jq -r 'Account' <<< ${$aws_identity_data})
-dotnet lambda package
 cdk bootstrap aws://$aws_account_id/$r -c envName=$e
 cdk deploy -c envName=$e --require-approval=never
