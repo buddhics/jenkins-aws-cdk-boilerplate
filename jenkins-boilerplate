@@ -18,23 +18,6 @@ pipeline{
         DOTNET_CLI_HOME = "/tmp/DOTNET_CLI_HOME"
     }
     stages {
-        // stage ("Initialize") {
-        //     agent {
-        //         node {
-        //             label 'linux-node'
-        //         }
-        //     }
-        //     steps{
-        //         script {
-        //             FAILED_STAGE = env.STAGE_NAME
-        //             config = readJSON file: "${WORKSPACE}/src/Boligmappa.ProfessionalServices/scripts/config.json"
-        //             environmentName = params.DEPLOY_ENV;
-        //             roleArn = config["deployEnvironments"][environmentName].roleArn;
-        //             accountId = config["deployEnvironments"][environmentName].accountId;
-        //             println "account - ${accountId}"
-        //         }
-        //     }
-        // }
         stage ("Checkout") {
             agent any
             steps{
@@ -48,7 +31,13 @@ pipeline{
             }
         }
         stage ("Deploy Test") {
-            agent any
+            agent {
+                docker { 
+                    image 'boligmappa/aws-cdk-dotnet:v1.0.0'
+                    args "-v /etc/passwd:/etc/passwd -u root --privileged"
+                    reuseNode true
+                } 
+            }
             when {
                 expression { params.DEPLOY_ENV == 'test'}
             }
@@ -56,76 +45,75 @@ pipeline{
                 script {
                     FAILED_STAGE = env.STAGE_NAME
                 }
-                // dir("${WORKSPACE}/src/Boligmappa.ConfirmFileUpload/Boligmappa.ConfirmFileUploadLambda") {
-                //     sh 'dotnet lambda package -o Boligmappa.ConfirmFileUploadLambda.zip'
-                // }
-                // dir("${WORKSPACE}/src/Boligmappa.ConfirmFileUpload/Boligmappa.ConfirmFileUploadCdk") {
-                //     withAWS(region: 'eu-central-1') {
-                //         sh """cdk bootstrap aws://${accountId}/eu-central-1 -c envName=test"""
-                //         sh "cdk deploy -c envName=test --require-approval=never"
-                //     }
-                // }
-                sh """echo 'test'"""
+                dir("${WORKSPACE}/AWSLambdaFunction") {
+                    sh 'dotnet lambda package'
+                }
+                dir("${WORKSPACE}/cdk-bolieplate") {
+                    withAWS(role: <role-arn>, region: 'eu-central-1')
+                        sh """${WORKSPACE}/../scripts/cdk.deploy.sh -r eu-central-1 -e test"""
+                    }
+                }
             }
         }
         stage ("Deploy Staging") {
-            agent any
+            agent {
+                docker { 
+                    image 'boligmappa/aws-cdk-dotnet:v1.0.0'
+                    args "-v /etc/passwd:/etc/passwd -u root --privileged"
+                    reuseNode true
+                } 
+            }
             when {
                 expression { params.DEPLOY_ENV == 'staging'}
             }
             steps{
-                // script {
-                //     FAILED_STAGE = env.STAGE_NAME
-                // }
-                // dir("${WORKSPACE}/src/Boligmappa.ConfirmFileUpload/Boligmappa.ConfirmFileUploadLambda") {
-                //     sh 'dotnet lambda package -o Boligmappa.ConfirmFileUploadLambda.zip'
-                // }
-                // dir("${WORKSPACE}/src/Boligmappa.ConfirmFileUpload/Boligmappa.ConfirmFileUploadCdk") {
-                //     withAWS(role: roleArn, region: 'eu-central-1') {
-                //         sh """cdk bootstrap aws://${accountId}/eu-central-1 -c envName=staging"""
-                //         sh "cdk deploy -c envName=staging --require-approval=never"
-                //     }
-                // }
-
-
-                //  withAWS(role: roleArn, region: 'eu-central-1') {
-                //                 sh """dotnet lambda package"""
-                //                 sh """ cdk bootstrap aws://${accountId}/eu-central-1  """
-                //                 sh  """ cdk deploy BedriftApiGatewayActualStack --context version=v1 --context authorizerCredentials=${envConfig.authorizerCredentials} --context authorizerUri=${envConfig.authorizerUri} --require-approval=never""" 
-                //             }
-                sh """echo 'staging'"""
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                }
+                dir("${WORKSPACE}/AWSLambdaFunction") {
+                    sh 'dotnet lambda package'
+                }
+                dir("${WORKSPACE}/cdk-bolieplate") {
+                    withAWS(role: <role-arn>, region: 'eu-central-1')
+                        sh """${WORKSPACE}/../scripts/cdk.deploy.sh -r eu-central-1 -e stage"""
+                    }
+                }
             }
         }
         stage ("Deploy Production") {
-            agent any
+            agent {
+                docker { 
+                    image 'boligmappa/aws-cdk-dotnet:v1.0.0'
+                    args "-v /etc/passwd:/etc/passwd -u root --privileged"
+                    reuseNode true
+                } 
+            }
             when {
                 expression { params.DEPLOY_ENV == 'production'}
             }
             steps{
-                // script {
-                //     FAILED_STAGE = env.STAGE_NAME
-                // }
-                // dir("${WORKSPACE}/src/Boligmappa.ConfirmFileUpload/Boligmappa.ConfirmFileUploadLambda") {
-                //     sh 'dotnet lambda package -o Boligmappa.ConfirmFileUploadLambda.zip'
-                // }
-                // dir("${WORKSPACE}/src/Boligmappa.ConfirmFileUpload/Boligmappa.ConfirmFileUploadCdk") {
-                //     withAWS(role: roleArn, region: 'eu-central-1') {
-                //         sh """cdk bootstrap aws://${accountId}/eu-central-1 -c envName=production"""
-                //         sh "cdk deploy -c envName=production --require-approval=never"
-                //     }
-                // }
-                sh """echo 'prod'"""
+                script {
+                    FAILED_STAGE = env.STAGE_NAME
+                }
+                dir("${WORKSPACE}/AWSLambdaFunction") {
+                    sh 'dotnet lambda package'
+                }
+                dir("${WORKSPACE}/cdk-bolieplate") {
+                    withAWS(role: <role-arn>, region: 'eu-central-1')
+                        sh """${WORKSPACE}/../scripts/cdk.deploy.sh -r eu-central-1 -e prod"""
+                    }
+                }
             }
         }
     }
     post {
       failure {
-          echo 'Failed ConfirmFileUpload job' 
-        //   slackSend color: "danger", message: "*${currentBuild.currentResult}*: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} \n*FAILED STAGE* : ${FAILED_STAGE}\n*MORE INFO AT*: ${env.BUILD_URL}"
+          echo 'Failed CDK job' 
+          slackSend color: "danger", message: "*${currentBuild.currentResult}*: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} \n*FAILED STAGE* : ${FAILED_STAGE}\n*MORE INFO AT*: ${env.BUILD_URL}"
       }
       success {
-          echo 'Professional ConfirmFileUpload job success'
-        //   slackSend color: "good", message: "*${currentBuild.currentResult}*: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} \n*MORE INFO AT*: ${env.BUILD_URL}"
+          echo 'CDK job success'
+          slackSend color: "good", message: "*${currentBuild.currentResult}*: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} \n*MORE INFO AT*: ${env.BUILD_URL}"
       }
       always {
           echo 'Cleaning up workspace'
