@@ -1,9 +1,5 @@
 pipeline{
-    // agent {
-    //     node {
-    //         label "linux-node"
-    //     }
-    // }
+    agent none
     parameters {
       choice(
         name: 'DEPLOY_ENV',
@@ -40,12 +36,7 @@ pipeline{
         //     }
         // }
         stage ("Checkout") {
-            // agent {
-            //     node {
-            //         label "linux-node"
-            //         customWorkspace "${WORKSPACE}"
-            //     }
-            // }
+            agent none
             steps{
                 script {
                     FAILED_STAGE = env.STAGE_NAME
@@ -57,13 +48,7 @@ pipeline{
             }
         }
         stage ("Deploy Test") {
-            // agent {
-            //     docker { 
-            //         image 'boligmappa/aws-cdk-dotnet:v1.0.0'
-            //         args "-v /etc/passwd:/etc/passwd -u root --privileged"
-            //         reuseNode true
-            //     } 
-            // }
+            agent none
             when {
                 expression { params.DEPLOY_ENV == 'test'}
             }
@@ -84,13 +69,7 @@ pipeline{
             }
         }
         stage ("Deploy Staging") {
-            // agent {
-            //     docker { 
-            //         image 'boligmappa/aws-cdk-dotnet:v1.0.0'
-            //         args "-v /etc/passwd:/etc/passwd -u root --privileged"
-            //         reuseNode true
-            //     } 
-            // }
+            agent none
             when {
                 expression { params.DEPLOY_ENV == 'staging'}
             }
@@ -118,13 +97,7 @@ pipeline{
             }
         }
         stage ("Deploy Production") {
-            // agent {
-            //     docker { 
-            //         image 'boligmappa/aws-cdk-dotnet:v1.0.0'
-            //         args "-v /etc/passwd:/etc/passwd -u root --privileged"
-            //         reuseNode true
-            //     } 
-            // }
+            agent none
             when {
                 expression { params.DEPLOY_ENV == 'production'}
             }
