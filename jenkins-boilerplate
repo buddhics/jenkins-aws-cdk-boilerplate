@@ -43,8 +43,8 @@ pipeline{
                     echo "$params.BRANCH"
                 }
                 git branch: params.BRANCH, 
-                        credentialsId: 'GIT',
-                        url: "https://bitbucket.org/boligmappa/professional-microservices"
+                        credentialsId: 'github',
+                        url: "git@github.com:buddhics/jenkins-aws-cdk-boilerplate.git"
             }
         }
         stage ("Deploy Test") {
