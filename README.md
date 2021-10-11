@@ -11,3 +11,5 @@ Organizing your environments using multiple accounts in AWS is recommended for o
 3. Maintain a separate configuration file to have account-related configurations.
 
 This boilerplate will show how to manage AWS account-related configurations in 'cdk.json' file.
+
+Find more information : https://buddhiamigo.medium.com/deploy-aws-cdk-stack-into-different-aws-accounts-through-a-jenkins-pipeline-12bd9e27c7
